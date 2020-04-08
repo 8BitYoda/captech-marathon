@@ -1,4 +1,5 @@
-<form [formGroup]="activityInputForm" autocomplete="off">
+<form [formGroup]="activityInputForm"
+      (ngSubmit)="onSubmit()" autocomplete="off">
   <!-- First Name -->
   <mat-form-field>
     <mat-label>First Name</mat-label>
@@ -57,7 +58,7 @@
 
       <!-- Activity Date -->
       <mat-form-field>
-        <mat-label>Angular forms</mat-label>
+        <mat-label>Date of Activity</mat-label>
         <input matInput
                aria-label="date"
                (focus)="picker.open()"
@@ -72,5 +73,5 @@
     </div>
   </div>
   <button mat-raised-button (click)="addActivity()">Add</button>
-
+  <button mat-raised-button color="primary" type="submit">Save</button>
 </form>

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
-import { CTOffices } from './activity';
+import { ActivityLog, CTOffices } from './activity';
 
 @Component({
   selector: 'app-activity-form',
@@ -57,6 +57,13 @@ export class ActivityFormComponent implements OnInit {
       activityType: ['', Validators.required],
       date: [new Date(), Validators.required]
     });
+  }
+
+  onSubmit() {
+    if (this.activityInputForm.valid) {
+      const payload: ActivityLog = this.activityInputForm.getRawValue();
+      console.log('payload being submitted:', payload);
+    }
   }
 
   private _filter(value: string): string[] {
