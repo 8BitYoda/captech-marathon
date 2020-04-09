@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
-import { ActivityLog, CTOffices } from './activity';
+import { ActivityType, CTOffices, NewUserLog } from './activity';
+import { ActivityService } from '../services/activity.service';
 
 @Component({
   selector: 'app-activity-form',
@@ -16,8 +17,9 @@ export class ActivityFormComponent implements OnInit {
   capTechOffices: string[] = [];
   filteredOffices: Observable<string[]>;
 
-  constructor(private fb: FormBuilder) {
-    Object.keys(CTOffices).filter(key => this.capTechOffices.push(key));
+  constructor(private fb: FormBuilder,
+              private activityService: ActivityService) {
+    Object.values(CTOffices).filter(value => this.capTechOffices.push(value));
   }
 
   ngOnInit(): void {
@@ -59,10 +61,27 @@ export class ActivityFormComponent implements OnInit {
     });
   }
 
-  onSubmit() {
+  onSubmit(): void {
     if (this.activityInputForm.valid) {
-      const payload: ActivityLog = this.activityInputForm.getRawValue();
-      console.log('payload being submitted:', payload);
+      const payload: NewUserLog = this.activityInputForm.getRawValue();
+      payload.activities.forEach(activity => {
+        switch (activity.activityType) {
+          case ActivityType.BIKE:
+            payload.totalBikeMiles = (payload.totalBikeMiles || 0) + activity.distance;
+            break;
+          case ActivityType.RUN:
+            payload.totalRunMiles = (payload.totalRunMiles || 0) + activity.distance;
+            break;
+          case ActivityType.WALK:
+            payload.totalWalkMiles = (payload.totalWalkMiles || 0) + activity.distance;
+            break;
+        }
+      });
+
+      this.activityService.addActivity(payload).then(() => {
+        this.activities.clear();
+        this.addActivity();
+      });
     }
   }
 

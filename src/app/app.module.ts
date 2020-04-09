@@ -13,6 +13,10 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { ActivityService } from './services/activity.service';
+import { AngularFireModule } from '@angular/fire';
+import { environment } from '../environments/environment';
+import { AngularFirestoreModule } from '@angular/fire/firestore';
 
 @NgModule({
   declarations: [
@@ -20,6 +24,8 @@ import { MatButtonModule } from '@angular/material/button';
     ActivityFormComponent
   ],
   imports: [
+    AngularFireModule.initializeApp(environment.firebaseConfig),
+    AngularFirestoreModule,
     BrowserModule,
     BrowserAnimationsModule,
     ReactiveFormsModule,
@@ -32,7 +38,9 @@ import { MatButtonModule } from '@angular/material/button';
     MatIconModule,
     MatButtonModule
   ],
-  providers: [],
+  providers: [
+    ActivityService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
