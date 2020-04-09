@@ -2,24 +2,26 @@
       (ngSubmit)="onSubmit()" autocomplete="off">
   <!-- First Name -->
   <mat-form-field>
-    <mat-label>First Name</mat-label>
+    <mat-label>First Name *</mat-label>
     <input matInput
-           aria-label="first name"
+           aria-label="First Name"
            [formControlName]="'firstName'">
+    <mat-error>required</mat-error>
   </mat-form-field>
 
   <!-- Last Name -->
   <mat-form-field>
-    <mat-label>Last Name</mat-label>
+    <mat-label>Last Name *</mat-label>
     <input matInput
-           aria-label="last name"
+           aria-label="Last Name"
            [formControlName]="'lastName'">
+    <mat-error>required</mat-error>
   </mat-form-field>
 
   <!-- CapTech Office -->
   <mat-form-field>
     <input type="text"
-           placeholder="CapTech Office"
+           placeholder="CapTech Office *"
            aria-label="CapTech Office"
            matInput
            [formControlName]="'office'"
@@ -29,13 +31,17 @@
         {{office}}
       </mat-option>
     </mat-autocomplete>
+    <mat-error *ngIf="!activityInputForm.controls.office.hasError('invalidOffice')">required</mat-error>
+    <mat-error *ngIf="activityInputForm.controls.office.hasError('invalidOffice')">please selected a valid CapTech
+      office
+    </mat-error>
   </mat-form-field>
 
   <div [formArrayName]="'activities'"
        *ngFor="let activity of activities.controls; let i=index;">
     <div [formGroupName]="i">
       <!-- Activity Selector -->
-      <mat-button-toggle-group #group="matButtonToggleGroup" [formControlName]="'activityType'">
+      <mat-button-toggle-group #group="matButtonToggleGroup" [formControlName]="'type'">
         <mat-button-toggle value="Bike" aria-label="Bike">
           <mat-icon>directions_bike</mat-icon>
         </mat-button-toggle>
@@ -54,6 +60,10 @@
                type="number"
                aria-label="distance"
                [formControlName]="'distance'">
+        <mat-error *ngIf="!activities.at(i).get('distance').hasError('min')">required</mat-error>
+        <mat-error *ngIf="activities.at(i).get('distance').hasError('min')">please enter a distance greater then 0
+          miles
+        </mat-error>
       </mat-form-field>
 
       <!-- Activity Date -->
@@ -67,11 +77,16 @@
                [formControlName]="'date'">
         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
+        <mat-error>required</mat-error>
       </mat-form-field>
 
-      <button mat-raised-button color="warn" (click)="removeActivity(i)">Remove</button>
+      <button mat-icon-button color="warn" type="button" (click)="removeActivity(i)">
+        <mat-icon>delete</mat-icon>
+      </button>
     </div>
   </div>
-  <button mat-raised-button (click)="addActivity()">Add</button>
+  <button mat-icon-button type="button" (click)="addActivity()">
+    <mat-icon>add_circle</mat-icon>
+  </button>
   <button mat-raised-button color="primary" type="submit">Save</button>
 </form>

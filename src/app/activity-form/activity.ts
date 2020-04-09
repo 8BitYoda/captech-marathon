@@ -35,7 +35,7 @@ export interface Activity {
   /** Distance of activity */
   distance: number;
   /** Indicates what kind of activity is being entered */
-  activityType: ActivityType;
+  type: ActivityType;
   /** Date of activity */
   date: string;
 }

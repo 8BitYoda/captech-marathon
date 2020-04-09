@@ -1,5 +1,11 @@
+@import "src/custom-theme";
+
 form {
   mat-form-field {
-    margin: 0 1rem;
+    margin: 0.5rem 1rem;
+  }
+
+  mat-button-toggle-group.error {
+    border: solid 1px mat-color($captech-marathon-warn);
   }
 }

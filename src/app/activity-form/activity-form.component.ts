@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { ActivityType, CTOffices, NewUserLog } from './activity';
@@ -26,7 +26,7 @@ export class ActivityFormComponent implements OnInit {
     this.activityInputForm = this.fb.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
-      office: ['', Validators.required],
+      office: ['', [Validators.required, OfficeValidator]],
       activities: this.fb.array([this.createActivityItem()])
     });
 
@@ -39,6 +39,14 @@ export class ActivityFormComponent implements OnInit {
     this.activities = this.activityInputForm.get('activities') as FormArray;
   }
 
+  createActivityItem(): FormGroup {
+    return this.fb.group({
+      distance: ['', [Validators.required, Validators.min(0)]],
+      type: ['Run', Validators.required],
+      date: [new Date(), Validators.required]
+    });
+  }
+
   addActivity(): void {
     this.activities.push(this.createActivityItem());
   }
@@ -48,24 +56,16 @@ export class ActivityFormComponent implements OnInit {
       this.activities.removeAt(index);
     } else {
       this.activities.at(index).get('distance').setValue('');
-      this.activities.at(index).get('activityType').setValue('');
+      this.activities.at(index).get('type').setValue('Run');
       this.activities.at(index).get('date').setValue(new Date());
     }
-  }
-
-  createActivityItem(): FormGroup {
-    return this.fb.group({
-      distance: ['', Validators.required],
-      activityType: ['', Validators.required],
-      date: [new Date(), Validators.required]
-    });
   }
 
   onSubmit(): void {
     if (this.activityInputForm.valid) {
       const payload: NewUserLog = this.activityInputForm.getRawValue();
       payload.activities.forEach(activity => {
-        switch (activity.activityType) {
+        switch (activity.type) {
           case ActivityType.BIKE:
             payload.totalBikeMiles = (payload.totalBikeMiles || 0) + activity.distance;
             break;
@@ -86,6 +86,13 @@ export class ActivityFormComponent implements OnInit {
   }
 
   private _filter(value: string): string[] {
-    return this.capTechOffices.filter(option => option.toLowerCase().includes(value.toLowerCase()));
+    return this.capTechOffices.filter(option => option?.toLowerCase().includes(value?.toLowerCase()));
   }
 }
+
+const OfficeValidator = (control: AbstractControl): { [key: string]: boolean } => {
+  if (control.value && !Object.keys(CTOffices).includes(control.value.toString().toUpperCase())) {
+    return {invalidOffice: true};
+  }
+  return null;
+};
