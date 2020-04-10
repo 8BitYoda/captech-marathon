@@ -1,11 +1,94 @@
-@media only screen and (min-width: 600px) {
-  #smallScreenAdd {
-    display: none;
+:host {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-size: 14px;
+  color: #333;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.toolbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  background-color: #1976d2;
+  color: white;
+  font-weight: 600;
+
+  img {
+    margin: 0 16px;
   }
 }
 
-@media only screen and (max-width: 601px) {
-  #largeScreenAdd {
-    display: none;
+.content {
+  display: flex;
+  margin: 82px auto 32px;
+  padding: 0 16px;
+  max-width: 960px;
+  flex-direction: column;
+  align-items: center;
+
+  .mat-fab {
+    position: fixed;
+    right: 15px;
+    bottom: 15px;
+  }
+
+  // temporary, just wanted to get a feel for a layout
+  .map-placeholder {
+    background-color: gray;
+    height: 85vh;
+    width: 100%;
+  }
+
+  // temporary, just wanted to get a feel for a layout
+  .total-placeholder {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+
+    .total-tally {
+      background-color: gray;
+      height: 4rem;
+      width: 25%;
+      margin-top: 2rem;
+    }
+  }
+
+  // temporary, just wanted to get a feel for a layout
+  .total-combined-tally {
+    height: 4rem;
+    width: 100%;
+    margin-bottom: 2rem;
+    flex-grow: 1;
+    flex-basis: 100%;
+    display: flex;
+    justify-content: center;
+
+    div {
+      width: 50%;
+      height: inherit;
+      background-color: gray;
+    }
+  }
+}
+
+
+footer {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  line-height: 20px;
+  height: 3rem;
+
+  a {
+    display: flex;
+    align-items: center;
   }
 }
