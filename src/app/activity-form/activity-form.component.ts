@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
@@ -12,6 +12,7 @@ import { MatBottomSheetRef } from '@angular/material/bottom-sheet';
   styleUrls: ['./activity-form.component.scss']
 })
 export class ActivityFormComponent implements OnInit {
+  @ViewChild('buttonContainer') buttonContainerEl: ElementRef;
 
   activityInputForm: FormGroup;
   activities: FormArray;
@@ -51,6 +52,8 @@ export class ActivityFormComponent implements OnInit {
 
   addActivity(): void {
     this.activities.push(this.createActivityItem());
+    setTimeout(() =>
+      this.buttonContainerEl.nativeElement.scrollIntoView({behavior: 'smooth', block: 'center', inline: 'end'}), 0);
   }
 
   removeActivity(index: number): void {
@@ -80,11 +83,9 @@ export class ActivityFormComponent implements OnInit {
         }
       });
 
-      this.bottomSheetRef.dismiss();
-      // this.activityService.addActivity(payload).then(() => {
-      //   this.activities.clear();
-      //   this.addActivity();
-      // });
+      this.activityService.addActivity(payload).then(() => {
+        this.bottomSheetRef.dismiss();
+      });
     }
   }
 

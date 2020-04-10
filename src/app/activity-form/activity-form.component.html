@@ -44,7 +44,7 @@
     <div [formGroupName]="i"
          class="activity">
       <button mat-icon-button
-              id="removeActivityMobile"
+              id="removeActivitySm"
               color="warn"
               type="button"
               (click)="removeActivity(i)">
@@ -104,7 +104,7 @@
       </mat-form-field>
 
       <button mat-icon-button
-              id="removeActivity"
+              id="removeActivityLg"
               color="warn"
               type="button"
               (click)="removeActivity(i)">
@@ -113,7 +113,7 @@
     </div>
   </div>
 
-  <div id="buttonsContainer">
+  <div id="buttonsContainer" #buttonContainer>
     <button id="addActivity"
             mat-icon-button
             type="button"
