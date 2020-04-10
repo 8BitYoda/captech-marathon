@@ -17,6 +17,7 @@ import { ActivityService } from './services/activity.service';
 import { AngularFireModule } from '@angular/fire';
 import { environment } from '../environments/environment';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
+import { MAT_BOTTOM_SHEET_DATA, MatBottomSheetModule, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 
 @NgModule({
   declarations: [
@@ -36,10 +37,13 @@ import { AngularFirestoreModule } from '@angular/fire/firestore';
     MatDatepickerModule,
     MatButtonToggleModule,
     MatIconModule,
-    MatButtonModule
+    MatButtonModule,
+    MatBottomSheetModule
   ],
   providers: [
-    ActivityService
+    ActivityService,
+    {provide: MatBottomSheetRef, useValue: {}},
+    {provide: MAT_BOTTOM_SHEET_DATA, useValue: {}}
   ],
   bootstrap: [AppComponent]
 })

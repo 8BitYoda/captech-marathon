@@ -108,4 +108,8 @@
 
 <div class="content" role="main">
   <app-activity-form></app-activity-form>
+  <button id="largeScreenAdd" mat-raised-button color="primary" (click)="openAddActionSheet()">Add Activity</button>
+  <button id="smallScreenAdd" mat-fab color="primary" (click)="openAddActionSheet()">
+    <mat-icon>add</mat-icon>
+  </button>
 </div>

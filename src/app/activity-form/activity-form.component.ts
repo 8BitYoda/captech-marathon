@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { ActivityType, CTOffices, NewUserLog } from './activity';
 import { ActivityService } from '../services/activity.service';
+import { MatBottomSheetRef } from '@angular/material/bottom-sheet';
 
 @Component({
   selector: 'app-activity-form',
@@ -18,7 +19,8 @@ export class ActivityFormComponent implements OnInit {
   filteredOffices: Observable<string[]>;
 
   constructor(private fb: FormBuilder,
-              private activityService: ActivityService) {
+              private activityService: ActivityService,
+              private bottomSheetRef: MatBottomSheetRef<ActivityFormComponent>) {
     Object.values(CTOffices).filter(value => this.capTechOffices.push(value));
   }
 
@@ -78,10 +80,11 @@ export class ActivityFormComponent implements OnInit {
         }
       });
 
-      this.activityService.addActivity(payload).then(() => {
-        this.activities.clear();
-        this.addActivity();
-      });
+      this.bottomSheetRef.dismiss();
+      // this.activityService.addActivity(payload).then(() => {
+      //   this.activities.clear();
+      //   this.addActivity();
+      // });
     }
   }
 
