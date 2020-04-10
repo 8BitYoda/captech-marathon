@@ -1,3 +1,4 @@
+<h2>Record Activity</h2>
 <form [formGroup]="activityInputForm"
       (ngSubmit)="onSubmit()" autocomplete="off">
   <!-- First Name -->
@@ -38,17 +39,39 @@
   </mat-form-field>
 
   <div [formArrayName]="'activities'"
+       class="activitiesContainer"
        *ngFor="let activity of activities.controls; let i=index;">
-    <div [formGroupName]="i">
+    <div [formGroupName]="i"
+         class="activity">
+      <button mat-icon-button
+              id="removeActivityMobile"
+              color="warn"
+              type="button"
+              (click)="removeActivity(i)">
+        <mat-icon>delete</mat-icon>
+      </button>
+
       <!-- Activity Selector -->
       <mat-button-toggle-group #group="matButtonToggleGroup" [formControlName]="'type'">
-        <mat-button-toggle value="Bike" aria-label="Bike">
+        <mat-button-toggle value="Bike"
+                           matTooltip="Bike"
+                           [matTooltipShowDelay]="450"
+                           [matTooltipPosition]="'above'"
+                           aria-label="Bike">
           <mat-icon>directions_bike</mat-icon>
         </mat-button-toggle>
-        <mat-button-toggle value="Run" aria-label="Run">
+        <mat-button-toggle value="Run"
+                           matTooltip="Run"
+                           [matTooltipShowDelay]="450"
+                           [matTooltipPosition]="'above'"
+                           aria-label="Run">
           <mat-icon>directions_run</mat-icon>
         </mat-button-toggle>
-        <mat-button-toggle value="Walk" aria-label="Walk">
+        <mat-button-toggle value="Walk"
+                           matTooltip="Walk"
+                           [matTooltipShowDelay]="450"
+                           [matTooltipPosition]="'above'"
+                           aria-label="Walk">
           <mat-icon>directions_walk</mat-icon>
         </mat-button-toggle>
       </mat-button-toggle-group>
@@ -80,13 +103,23 @@
         <mat-error>required</mat-error>
       </mat-form-field>
 
-      <button mat-icon-button color="warn" type="button" (click)="removeActivity(i)">
+      <button mat-icon-button
+              id="removeActivity"
+              color="warn"
+              type="button"
+              (click)="removeActivity(i)">
         <mat-icon>delete</mat-icon>
       </button>
     </div>
   </div>
-  <button mat-icon-button type="button" (click)="addActivity()">
-    <mat-icon>add_circle</mat-icon>
-  </button>
-  <button mat-raised-button color="primary" type="submit">Save</button>
+
+  <div id="buttonsContainer">
+    <button id="addActivity"
+            mat-icon-button
+            type="button"
+            (click)="addActivity()">
+      <mat-icon>add_circle</mat-icon>
+    </button>
+    <button mat-raised-button color="primary" type="submit" id="submit">Save</button>
+  </div>
 </form>

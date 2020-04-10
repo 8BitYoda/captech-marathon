@@ -18,6 +18,7 @@ import { AngularFireModule } from '@angular/fire';
 import { environment } from '../environments/environment';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { MAT_BOTTOM_SHEET_DATA, MatBottomSheetModule, MatBottomSheetRef } from '@angular/material/bottom-sheet';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @NgModule({
   declarations: [
@@ -38,7 +39,8 @@ import { MAT_BOTTOM_SHEET_DATA, MatBottomSheetModule, MatBottomSheetRef } from '
     MatButtonToggleModule,
     MatIconModule,
     MatButtonModule,
-    MatBottomSheetModule
+    MatBottomSheetModule,
+    MatTooltipModule
   ],
   providers: [
     ActivityService,
