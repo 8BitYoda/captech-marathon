@@ -69,16 +69,20 @@ export class ActivityFormComponent implements OnInit {
   onSubmit(): void {
     if (this.activityInputForm.valid) {
       const payload: NewUserLog = this.activityInputForm.getRawValue();
+      payload.totalBikeMiles = 0;
+      payload.totalRunMiles = 0;
+      payload.totalWalkMiles = 0;
+
       payload.activities.forEach(activity => {
         switch (activity.type) {
           case ActivityType.BIKE:
-            payload.totalBikeMiles = (payload.totalBikeMiles || 0) + activity.distance;
+            payload.totalBikeMiles += activity.distance;
             break;
           case ActivityType.RUN:
-            payload.totalRunMiles = (payload.totalRunMiles || 0) + activity.distance;
+            payload.totalRunMiles += activity.distance;
             break;
           case ActivityType.WALK:
-            payload.totalWalkMiles = (payload.totalWalkMiles || 0) + activity.distance;
+            payload.totalWalkMiles += activity.distance;
             break;
         }
       });

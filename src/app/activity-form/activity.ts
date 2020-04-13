@@ -58,3 +58,11 @@ export enum CTOffices {
   PHILADELPHIA = 'Philadelphia',
   RICHMOND = 'Richmond'
 }
+
+/** Total Miles from Database */
+export interface Totals {
+  totalBike: number;
+  totalRun: number;
+  totalWalk: number;
+  totalMiles: number;
+}
