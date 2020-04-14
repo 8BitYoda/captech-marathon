@@ -16,55 +16,61 @@
     }
   }
 
-  .total {
+  .total-group {
     display: flex;
-    flex-flow: column nowrap;
-    justify-content: center;
-    font-family: Roboto, "Helvetica Neue", sans-serif;
-    padding-left: 0.5rem;
+    flex-flow: row nowrap;
+    justify-content: space-around;
+    flex-grow: 1;
 
-    label {
-      font-size: 14px;
-      font-weight: 500;
-    }
+    .total {
+      display: flex;
+      flex-flow: column nowrap;
+      justify-content: center;
+      font-family: Roboto, "Helvetica Neue", sans-serif;
+      padding-left: 0.5rem;
 
-    mat-icon {
-      font-size: 16px;
-    }
-
-    span {
-      font-size: 18px;
-      font-weight: bold;
-      padding-left: 1rem;
-
-      small {
+      label {
+        font-size: 14px;
         font-weight: 500;
       }
-    }
 
-    @media only screen and (max-width: 774px) {
-      label {
-        font-size: 10px;
+      mat-icon {
+        font-size: 16px;
       }
 
       span {
-        font-size: 14px;
-      }
-    }
+        font-size: 18px;
+        font-weight: bold;
+        padding-left: 1rem;
 
-    @media only screen and (min-width: 900px) {
-      mat-icon {
-        font-size: 20px;
+        small {
+          font-weight: 500;
+        }
+      }
+
+      @media only screen and (max-width: 774px) {
+        label {
+          font-size: 10px;
+        }
+
+        span {
+          font-size: 14px;
+        }
+      }
+
+      @media only screen and (min-width: 900px) {
+        mat-icon {
+          font-size: 20px;
+        }
       }
     }
   }
 
 
   @media only screen and (max-width: 495px) {
-    justify-content: flex-end;
-    .total {
+    .total-group {
       flex-grow: 1;
-      flex-basis: 45%;
+      flex-basis: 95%;
     }
   }
 }
