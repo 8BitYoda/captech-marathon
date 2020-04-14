@@ -51,7 +51,8 @@ import { MatDividerModule } from '@angular/material/divider';
   providers: [
     ActivityService,
     {provide: MatBottomSheetRef, useValue: {}},
-    {provide: MAT_BOTTOM_SHEET_DATA, useValue: {}}
+    {provide: MAT_BOTTOM_SHEET_DATA, useValue: {}},
+    // {provide: ActivityService, useClass: MockActivityService}
   ],
   bootstrap: [AppComponent]
 })

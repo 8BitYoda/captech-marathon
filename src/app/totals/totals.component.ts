@@ -25,16 +25,10 @@ export class TotalsComponent implements OnInit {
   }
 
   private getTotalMiles(office?: CTOffices) {
-    // this.activityService.getTotalMiles(office).subscribe(res => {
-    //   this.totals = res;
-    // }, error => {
-    //   console.error(error);
-    // });
-    this.totals = {
-      totalRun: 999999,
-      totalWalk: 999999,
-      totalBike: 999999,
-      totalMiles: 999999
-    };
+    this.activityService.getTotalMiles(office).subscribe(res => {
+      this.totals = res;
+    }, error => {
+      console.error(error);
+    });
   }
 }

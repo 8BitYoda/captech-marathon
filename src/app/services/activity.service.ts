@@ -6,10 +6,16 @@ import { from } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Totals } from '../models/totals';
 
+export interface ActivityServiceInterface {
+  addActivity(payload: NewUserLog);
+
+  getTotalMiles(office?: CTOffices);
+}
+
 @Injectable({
   providedIn: 'root'
 })
-export class ActivityService {
+export class ActivityService implements ActivityServiceInterface {
   db = this.angularFirestore.firestore;
 
   constructor(private angularFirestore: AngularFirestore) {
