@@ -1,4 +1,4 @@
-<div>
+<div class="totals-container">
   <mat-form-field>
     <mat-label>Office</mat-label>
     <mat-select [value]="'All'" (selectionChange)="refreshTotals($event)">
@@ -8,11 +8,21 @@
     </mat-select>
   </mat-form-field>
 
-  <div>
-
+  <div class="total combined">
+    <label>Total</label>
+    <span>{{ totals?.totalMiles || '--' }} <small>miles</small></span>
   </div>
-  Total Miles: {{ totals?.totalMiles || '--' }}
-  Bike total: {{ totals?.totalBike || '--' }}
-  Run total: {{ totals?.totalRun || '--' }}
-  Walk total: {{ totals?.totalWalk || '--' }}
+  <div class="total">
+    <mat-icon [inline]="true">directions_bike</mat-icon>
+    <span>{{ totals?.totalBike || '--' }} <small>miles</small></span>
+  </div>
+  <div class="total">
+    <mat-icon [inline]="true">directions_run</mat-icon>
+    <span>{{ totals?.totalRun || '--' }} <small>miles</small></span>
+  </div>
+  <div class="total">
+    <mat-icon [inline]="true">directions_walk</mat-icon>
+    <span>{{ totals?.totalWalk || '--' }} <small>miles</small></span>
+  </div>
 </div>
+<mat-divider></mat-divider>

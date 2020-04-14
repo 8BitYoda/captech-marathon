@@ -21,6 +21,7 @@ import { MAT_BOTTOM_SHEET_DATA, MatBottomSheetModule, MatBottomSheetRef } from '
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TotalsComponent } from './totals/totals.component';
 import { MatSelectModule } from '@angular/material/select';
+import { MatDividerModule } from '@angular/material/divider';
 
 @NgModule({
   declarations: [
@@ -44,7 +45,8 @@ import { MatSelectModule } from '@angular/material/select';
     MatButtonModule,
     MatBottomSheetModule,
     MatTooltipModule,
-    MatSelectModule
+    MatSelectModule,
+    MatDividerModule
   ],
   providers: [
     ActivityService,
