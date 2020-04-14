@@ -2,7 +2,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
-import { ActivityType, CTOffices, NewUserLog } from './activity';
+import { ActivityType, CTOffices, NewUserLog } from '../models/activity';
 import { ActivityService } from '../services/activity.service';
 import { MatBottomSheetRef } from '@angular/material/bottom-sheet';
 

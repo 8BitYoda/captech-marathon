@@ -1,0 +1,18 @@
+<div>
+  <mat-form-field>
+    <mat-label>Office</mat-label>
+    <mat-select [value]="'All'" (selectionChange)="refreshTotals($event)">
+      <mat-option *ngFor="let office of capTechOffices" [value]="office">
+        {{ office }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <div>
+
+  </div>
+  Total Miles: {{ totals?.totalMiles || '--' }}
+  Bike total: {{ totals?.totalBike || '--' }}
+  Run total: {{ totals?.totalRun || '--' }}
+  Walk total: {{ totals?.totalWalk || '--' }}
+</div>

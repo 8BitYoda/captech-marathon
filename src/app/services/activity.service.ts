@@ -1,7 +1,10 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import * as firebase from 'firebase';
-import { CTOffices, ExistingUserLog, NewUserLog, Totals } from '../activity-form/activity';
+import { CTOffices, ExistingUserLog, NewUserLog } from '../models/activity';
+import { from } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { Totals } from '../models/totals';
 
 @Injectable({
   providedIn: 'root'
@@ -43,14 +46,16 @@ export class ActivityService {
     const usersRef = this.db.collection('users');
     const query = office ? usersRef.where('office', '==', office) : usersRef;
 
-    return query.get().then(response => {
-      response.forEach(doc => {
-        totals.totalBike += doc.data().totalBikeMiles;
-        totals.totalRun += doc.data().totalRunMiles;
-        totals.totalWalk += doc.data().totalWalkMiles;
-      });
-      totals.totalMiles = totals.totalBike + totals.totalRun + totals.totalWalk;
-      return totals;
-    }).then().catch(err => console.error(err));
+    return from(query.get()).pipe(
+      map(response => {
+        response.forEach(doc => {
+          totals.totalBike += doc.data().totalBikeMiles;
+          totals.totalRun += doc.data().totalRunMiles;
+          totals.totalWalk += doc.data().totalWalkMiles;
+        });
+        totals.totalMiles = totals.totalBike + totals.totalRun + totals.totalWalk;
+        return totals;
+      })
+    );
   }
 }
