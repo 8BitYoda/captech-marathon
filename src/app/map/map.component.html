@@ -1,4 +1,7 @@
 <mgl-map
   [style]="'mapbox://styles/jayfialkowski/ck8rjl0bu0d0f1iqke6vrbf3z'"
   (load)="setMap($event)">
+
+  <mgl-geojson-source *ngIf="drawLine" id="source" [data]="drawLine"></mgl-geojson-source>
+  <mgl-layer *ngIf="drawLine" id="trace" type="line" source="source"></mgl-layer>
 </mgl-map>
