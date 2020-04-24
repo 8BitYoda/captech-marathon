@@ -3,5 +3,7 @@
   (load)="setMap($event)">
 
   <mgl-geojson-source *ngIf="line" id="source" [data]="line"></mgl-geojson-source>
-  <mgl-layer *ngIf="line" id="trace" type="line" source="source" [layout]="layout" [paint]="paint"></mgl-layer>
+  <mgl-layer *ngIf="line" id="trace" type="line" source="source" [layout]="lineLayout" [paint]="linePaint"></mgl-layer>
+  <mgl-geojson-source *ngIf="point" id="pointSource" [data]="point"></mgl-geojson-source>
+  <mgl-layer *ngIf="point" id="tracePoint" type="symbol" source="pointSource" [layout]="pointLayout"></mgl-layer>
 </mgl-map>
