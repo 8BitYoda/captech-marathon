@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import * as mapboxgl from 'mapbox-gl';
-import { Map } from 'mapbox-gl';
+import { LineLayout, LinePaint, Map } from 'mapbox-gl';
+import * as turf from '@turf/turf';
+import { ActivityService } from '../services/activity.service';
+import { CapTechOfficeCoord } from '../models/capTechOfficeCoord';
 
 @Component({
   selector: 'app-map',
@@ -9,53 +12,24 @@ import { Map } from 'mapbox-gl';
 })
 export class MapComponent implements OnInit {
   /** CapTech Offices */
-  readonly captechOffices: CapTechOfficeCord = {
-    atl: [-84.386015, 33.771060],
-    clt: [-80.845750, 35.225759],
-    rva: [-77.527264, 37.605657],
-    dc: [-77.350846, 38.952584],
-    phi: [-75.413489, 40.079056],
-    cmh: [-82.997026, 39.959019], // columbus, oh
-    chi: [-87.636008, 41.879860],
-    den: [-104.990875, 39.749686]
-  };
+  captechOffices: CapTechOfficeCoord = new CapTechOfficeCoord();
 
-  map: Map;
+  map: Map; // mapbox-gl reference
+  line;
 
-  drawLine;
-
-  data = {
-    type: 'FeatureCollection',
-    features: [
-      {
-        type: 'Feature',
-        properties: {},
-        geometry: {
-          type: 'LineString',
-          coordinates: [
-            this.captechOffices.den,
-            this.captechOffices.atl,
-            this.captechOffices.clt,
-            this.captechOffices.rva,
-            this.captechOffices.dc,
-            this.captechOffices.phi,
-            this.captechOffices.cmh,
-            this.captechOffices.chi,
-            this.captechOffices.den
-          ]
-        }
-      }
-    ]
-  };
-
-  paint = {
+  // styling for progress line drawn, used in html
+  paint: LinePaint = {
     'line-color': '#888',
     'line-width': 4
   };
+  layout: LineLayout = {
+    'line-cap': 'round',
+    'line-join': 'bevel'
+  };
 
-  private timer: number;
+  // private timer: number;
 
-  constructor() {
+  constructor(private activityService: ActivityService) {
   }
 
   ngOnInit(): void {
@@ -66,37 +40,81 @@ export class MapComponent implements OnInit {
 
     this.map.fitBounds(new mapboxgl.LngLatBounds(this.captechOffices.den, this.captechOffices.phi), {padding: 50});
 
+    this.drawMarkers();
+    this.findDistance();
+  }
+
+  drawMarkers(): void {
     Object.keys(this.captechOffices).forEach(key => {
       const marker = document.createElement('div');
       marker.className = 'marker';
       marker.id = key;
       new mapboxgl.Marker(marker).setLngLat(this.captechOffices[key]).addTo(this.map);
     });
-
-    const temp = this.data;
-    const coordinates = temp.features[0].geometry.coordinates;
-    temp.features[0].geometry.coordinates = [coordinates[0]];
-    this.drawLine = temp;
-    let i = 0;
-    this.timer = window.setInterval(() => {
-      if (i < coordinates.length) {
-        temp.features[0].geometry.coordinates.push(coordinates[i]);
-        this.drawLine = {...temp};
-        i++;
-      } else {
-        window.clearInterval(this.timer);
-      }
-    }, 300);
   }
-}
 
-export interface CapTechOfficeCord {
-  clt: [number, number];
-  atl: [number, number];
-  rva: [number, number];
-  dc: [number, number];
-  chi: [number, number];
-  phi: [number, number];
-  cmh: [number, number];
-  den: [number, number];
+  findDistance(type = 'totalMiles') {
+    // provides the ability to change the starting point of the route to the selected office
+    // todo add logic to allow for a selected 'starting' office
+    const selectedRoute = this.captechOffices.getDefaultRoute();
+
+    const totalOfficePerimeter = turf.length(selectedRoute, {units: 'miles'});
+    this.activityService.getTotalMiles().subscribe(miles => {
+      let milesTraveled = miles[type];
+
+      const startOfRoute: [number, number] = selectedRoute.geometry.coordinates[0] as [number, number];
+      const coord: [number, number][] = [startOfRoute];
+
+      while (milesTraveled >= 0) {
+        const traveledCoordinates = turf.lineSliceAlong(
+          selectedRoute,
+          0,
+          milesTraveled > totalOfficePerimeter ? totalOfficePerimeter : milesTraveled,
+          {units: 'miles'});
+
+        traveledCoordinates.geometry.coordinates.forEach(coordinate => coord.push([coordinate[0], coordinate[1]]));
+        milesTraveled = milesTraveled - totalOfficePerimeter;
+      }
+
+      const temp = {
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            properties: {},
+            geometry: {
+              type: 'LineString',
+              coordinates: coord
+            }
+          }]
+      };
+
+      this.drawLine(temp);
+    });
+  }
+
+  /**
+   * todo animate the line when drawn
+   * Takes a GeoJson feature object and draws it onto the map.
+   * @param geoJson feature consisting of one LineString
+   */
+  private drawLine(geoJson): void {
+    this.line = geoJson;
+
+    // todo "animation" but very choppy needs to be fixed
+    // const temp = geoJson;
+    // const coordinates = temp.features[0].geometry.coordinates;
+    // temp.features[0].geometry.coordinates = [coordinates[0]];
+    // this.line = temp;
+    // let i = 0;
+    // this.timer = window.setInterval(() => {
+    //   if (i < coordinates.length) {
+    //     temp.features[0].geometry.coordinates.push(coordinates[i]);
+    //     this.line = {...temp};
+    //     i++;
+    //   } else {
+    //     window.clearInterval(this.timer);
+    //   }
+    // }, 300);
+  }
 }

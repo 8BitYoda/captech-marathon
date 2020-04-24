@@ -14,4 +14,8 @@ mgl-map {
     content: "location_on";
     font-size: 20px;
   }
+
+  &.green::before {
+    color: green;
+  }
 }
