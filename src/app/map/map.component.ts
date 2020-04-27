@@ -78,41 +78,39 @@ export class MapComponent implements OnInit {
     // provides the ability to change the starting point of the route to the selected office
     // todo add logic to allow for a selected 'starting' office
     const selectedRoute = this.captechOffices.getDefaultRoute();
-
+    const startOfRoute: [number, number] = selectedRoute.geometry.coordinates[0] as [number, number];
     const totalOfficePerimeter = Math.ceil(turf.length(selectedRoute, {units: 'miles'}));
 
     this.activityService.getTotalMiles().subscribe(miles => {
       let milesTraveled = miles[type];
-      const startOfRoute: [number, number] = selectedRoute.geometry.coordinates[0] as [number, number];
-      const newCoords = [];
-
+      const derivedCoords = []; // coordinates derived from milesTraveled along selectedRoute
       let loopsMade = 0; // tracks how many loops around selectedRoute
       let partialLoopSteps = 0; // tracks number of steps scaled down to remainder distance
 
       while (milesTraveled >= 0) {
         if (milesTraveled > totalOfficePerimeter) {
           for (let i = 0; i < totalOfficePerimeter; i += totalOfficePerimeter / this.frameRate) {
-            newCoords.push(turf.along(selectedRoute, i, {units: 'miles'}).geometry.coordinates);
+            derivedCoords.push(turf.along(selectedRoute, i, {units: 'miles'}).geometry.coordinates);
           }
           loopsMade++;
         } else {
           partialLoopSteps = Math.ceil(milesTraveled / Math.ceil(totalOfficePerimeter / this.frameRate));
           for (let i = 0; i < milesTraveled; i += milesTraveled / partialLoopSteps) {
-            newCoords.push(turf.along(selectedRoute, i, {units: 'miles'}).geometry.coordinates);
+            derivedCoords.push(turf.along(selectedRoute, i, {units: 'miles'}).geometry.coordinates);
           }
         }
 
         milesTraveled -= totalOfficePerimeter;
       }
 
-      this.lineData = newCoords;
+      this.lineData = derivedCoords;
       this.steps = partialLoopSteps + (this.frameRate * loopsMade);
-      this.drawRouteLeadPoint(startOfRoute);
+      this.drawCompletedRoute(startOfRoute);
     });
   }
 
-  private drawRouteLeadPoint(startOfRoute): void {
-    /** setup initial states for the point and line */
+  private drawCompletedRoute(startOfRoute): void {
+    // setup initial states for the point and line
     this.point = {
       type: 'FeatureCollection',
       features: [
