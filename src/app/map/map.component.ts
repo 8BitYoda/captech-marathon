@@ -28,7 +28,7 @@ export class MapComponent implements OnInit {
     'line-join': 'bevel'
   };
   pointLayout: SymbolLayout = {
-    'icon-image': 'pitch-15',
+    'icon-image': 'fire-station-15',
     'icon-rotate': ['get', 'bearing'],
     'icon-rotation-alignment': 'map',
     'icon-allow-overlap': true,
@@ -41,12 +41,11 @@ export class MapComponent implements OnInit {
    * low frame rate
    */
   steps = 500;
-  /** Used to increment the value of the point measurement against the route. */
+  /** Used to track the current frame when drawing the route on map. */
   counter = 0;
 
   private lineData;
   private tempCoords = [];
-  progress = 0; // progress = timestamp - startTime
 
   constructor(private activityService: ActivityService) {
   }
@@ -102,17 +101,45 @@ export class MapComponent implements OnInit {
       }
 
       this.lineData = newCoords;
-      // this.lineTemp =
 
-      // this.drawLine();
-      this.animateLine();
-      // this.drawRouteLeadPoint(route, startOfRoute);
+      this.drawRouteLeadPoint(startOfRoute);
     });
   }
 
-  private animateLine() {
+  private drawRouteLeadPoint(startOfRoute): void {
+    /** setup initial states for the point and line */
+    this.point = {
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          properties: {},
+          geometry: {
+            type: 'Point',
+            coordinates: startOfRoute
+          }
+        }
+      ]
+    };
+    this.line = {
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          properties: {},
+          geometry: {
+            type: 'LineString',
+            coordinates: [startOfRoute]
+          }
+        }]
+    };
+
+    this.myAnimator();
+  }
+
+  private myAnimator() {
     // append new coordinates to the lineString
-    this.tempCoords.push(this.lineData[this.progress]);
+    this.tempCoords.push(this.lineData[this.counter]);
 
     // then update the map
     this.line = {
@@ -128,14 +155,7 @@ export class MapComponent implements OnInit {
         }]
     };
 
-    // Request the next frame of the animation.
-    if (this.progress < this.steps) {
-      requestAnimationFrame(this.animateLine.bind(this));
-    }
-    this.progress += 1;
-  }
-
-  private drawRouteLeadPoint(geoJson, startOfRoute): void {
+    // Update the source with new point coordinates.
     this.point = {
       type: 'FeatureCollection',
       features: [
@@ -144,54 +164,11 @@ export class MapComponent implements OnInit {
           properties: {},
           geometry: {
             type: 'Point',
-            coordinates: startOfRoute
+            coordinates: this.tempCoords[this.counter]
           }
         }
       ]
     };
-    this.myAnimator();
-  }
-
-  private myAnimator() {
-    const tempPoint = {
-      type: 'FeatureCollection',
-      features: [
-        {
-          type: 'Feature',
-          properties: {
-            bearing: null
-          },
-          geometry: {
-            type: 'Point',
-            coordinates: null
-          }
-        }
-      ]
-    };
-
-    // Update point geometry to a new position based on counter denoting
-    // the index to access the arc.
-    tempPoint.features[0].geometry.coordinates =
-      this.line.features[0].geometry.coordinates[this.counter];
-
-    // Calculate the bearing to ensure the icon is rotated to match the route arc
-    // The bearing is calculate between the current point and the next point, except
-    // at the end of the arc use the previous point and the current point
-    tempPoint.features[0].properties.bearing = turf.bearing(
-      turf.point(
-        this.line.features[0].geometry.coordinates[
-          this.counter >= this.steps ? this.counter - 1 : this.counter
-          ]
-      ),
-      turf.point(
-        this.line.features[0].geometry.coordinates[
-          this.counter >= this.steps ? this.counter : this.counter + 1
-          ]
-      )
-    );
-
-    // Update the source with this new data.
-    this.point = tempPoint;
 
     // Request the next frame of animation so long the end has not been reached.
     if (this.counter < this.steps) {
