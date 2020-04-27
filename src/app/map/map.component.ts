@@ -11,6 +11,8 @@ import { CapTechOfficeCoord } from '../models/capTechOfficeCoord';
   styleUrls: ['./map.component.scss']
 })
 export class MapComponent implements OnInit {
+  readonly frameRate = 500;
+
   /** CapTech Offices */
   captechOffices: CapTechOfficeCoord = new CapTechOfficeCoord();
 
@@ -40,12 +42,13 @@ export class MapComponent implements OnInit {
    * a smoother arc and animation, but too many steps will result in a
    * low frame rate
    */
-  steps = 500;
+  private steps = 0;
   /** Used to track the current frame when drawing the route on map. */
-  counter = 0;
+  private counter = 0;
 
+  /** coordinates calculated from total distance along the selected route line */
   private lineData;
-  private tempCoords = [];
+  private calculatedCoords = [];
 
   constructor(private activityService: ActivityService) {
   }
@@ -62,7 +65,7 @@ export class MapComponent implements OnInit {
     this.findDistance();
   }
 
-  drawOfficeMarkers(): void {
+  private drawOfficeMarkers(): void {
     Object.keys(this.captechOffices).forEach(key => {
       const marker = document.createElement('div');
       marker.className = 'marker';
@@ -71,37 +74,39 @@ export class MapComponent implements OnInit {
     });
   }
 
-  findDistance(type = 'totalMiles') {
+  private findDistance(type = 'totalMiles') {
     // provides the ability to change the starting point of the route to the selected office
     // todo add logic to allow for a selected 'starting' office
     const selectedRoute = this.captechOffices.getDefaultRoute();
 
-    const totalOfficePerimeter = turf.length(selectedRoute, {units: 'miles'});
+    const totalOfficePerimeter = Math.ceil(turf.length(selectedRoute, {units: 'miles'}));
+
     this.activityService.getTotalMiles().subscribe(miles => {
-      const milesTraveled = miles[type];
-
+      let milesTraveled = miles[type];
       const startOfRoute: [number, number] = selectedRoute.geometry.coordinates[0] as [number, number];
-      // const coord: [number, number][] = [startOfRoute];
-
-      // while (milesTraveled >= 0) {
-      //   const traveledCoordinates = turf.lineSliceAlong(
-      //     selectedRoute,
-      //     0,
-      //     milesTraveled > totalOfficePerimeter ? totalOfficePerimeter : milesTraveled,
-      //     {units: 'miles'});
-      //
-      //   traveledCoordinates.geometry.coordinates.forEach(coordinate => coord.push([coordinate[0], coordinate[1]]));
-      //   milesTraveled = milesTraveled - totalOfficePerimeter;
-      // }
-
-      // const lineDistance = turf.length(selectedRoute, {units: 'miles'});
       const newCoords = [];
-      for (let i = 0; i < milesTraveled; i += milesTraveled / this.steps) {
-        newCoords.push(turf.along(selectedRoute, i, {units: 'miles'}).geometry.coordinates);
+
+      let loopsMade = 0; // tracks how many loops around selectedRoute
+      let partialLoopSteps = 0; // tracks number of steps scaled down to remainder distance
+
+      while (milesTraveled >= 0) {
+        if (milesTraveled > totalOfficePerimeter) {
+          for (let i = 0; i < totalOfficePerimeter; i += totalOfficePerimeter / this.frameRate) {
+            newCoords.push(turf.along(selectedRoute, i, {units: 'miles'}).geometry.coordinates);
+          }
+          loopsMade++;
+        } else {
+          partialLoopSteps = Math.ceil(milesTraveled / Math.ceil(totalOfficePerimeter / this.frameRate));
+          for (let i = 0; i < milesTraveled; i += milesTraveled / partialLoopSteps) {
+            newCoords.push(turf.along(selectedRoute, i, {units: 'miles'}).geometry.coordinates);
+          }
+        }
+
+        milesTraveled -= totalOfficePerimeter;
       }
 
       this.lineData = newCoords;
-
+      this.steps = partialLoopSteps + (this.frameRate * loopsMade);
       this.drawRouteLeadPoint(startOfRoute);
     });
   }
@@ -137,9 +142,13 @@ export class MapComponent implements OnInit {
     this.myAnimator();
   }
 
+  /**
+   * Animates the drawing of both the line and point onto the map
+   * by iterating through the coordinates stored in {@link calculatedCoords}.
+   */
   private myAnimator() {
     // append new coordinates to the lineString
-    this.tempCoords.push(this.lineData[this.counter]);
+    this.calculatedCoords.push(this.lineData[this.counter]);
 
     // then update the map
     this.line = {
@@ -150,7 +159,7 @@ export class MapComponent implements OnInit {
           properties: {},
           geometry: {
             type: 'LineString',
-            coordinates: this.tempCoords
+            coordinates: this.calculatedCoords
           }
         }]
     };
@@ -164,17 +173,17 @@ export class MapComponent implements OnInit {
           properties: {},
           geometry: {
             type: 'Point',
-            coordinates: this.tempCoords[this.counter]
+            coordinates: this.calculatedCoords[this.counter]
           }
         }
       ]
     };
 
+    this.counter += 1;
+
     // Request the next frame of animation so long the end has not been reached.
     if (this.counter < this.steps) {
       requestAnimationFrame(this.myAnimator.bind(this));
     }
-
-    this.counter += 1;
   }
 }
