@@ -35,7 +35,6 @@ export class MapComponent implements OnInit {
     'icon-ignore-placement': true
   };
 
-  // private timer: number;
   /**
    * Number of steps to use in the arc and animation, more steps means
    * a smoother arc and animation, but too many steps will result in a
@@ -44,6 +43,10 @@ export class MapComponent implements OnInit {
   steps = 500;
   /** Used to increment the value of the point measurement against the route. */
   counter = 0;
+
+  private lineData;
+  private tempCoords = [];
+  progress = 0; // progress = timestamp - startTime
 
   constructor(private activityService: ActivityService) {
   }
@@ -98,47 +101,38 @@ export class MapComponent implements OnInit {
         newCoords.push(turf.along(selectedRoute, i, {units: 'miles'}).geometry.coordinates);
       }
 
-      const route = {
-        type: 'FeatureCollection',
-        features: [
-          {
-            type: 'Feature',
-            properties: {},
-            geometry: {
-              type: 'LineString',
-              coordinates: newCoords
-            }
-          }]
-      };
+      this.lineData = newCoords;
+      // this.lineTemp =
 
-      this.drawLine(route);
-      this.drawRouteLeadPoint(route, startOfRoute);
+      // this.drawLine();
+      this.animateLine();
+      // this.drawRouteLeadPoint(route, startOfRoute);
     });
   }
 
-  /**
-   * todo animate the line when drawn
-   * Takes a GeoJson feature object and draws it onto the map.
-   * @param geoJson feature consisting of one LineString
-   */
-  private drawLine(geoJson): void {
-    this.line = geoJson;
+  private animateLine() {
+    // append new coordinates to the lineString
+    this.tempCoords.push(this.lineData[this.progress]);
 
-    // todo "animation" but very choppy needs to be fixed
-    // const temp = geoJson;
-    // const coordinates = temp.features[0].geometry.coordinates;
-    // temp.features[0].geometry.coordinates = [coordinates[0]];
-    // this.line = temp;
-    // let i = 0;
-    // this.timer = window.setInterval(() => {
-    //   if (i < coordinates.length) {
-    //     temp.features[0].geometry.coordinates.push(coordinates[i]);
-    //     this.line = {...temp};
-    //     i++;
-    //   } else {
-    //     window.clearInterval(this.timer);
-    //   }
-    // }, 300);
+    // then update the map
+    this.line = {
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          properties: {},
+          geometry: {
+            type: 'LineString',
+            coordinates: this.tempCoords
+          }
+        }]
+    };
+
+    // Request the next frame of the animation.
+    if (this.progress < this.steps) {
+      requestAnimationFrame(this.animateLine.bind(this));
+    }
+    this.progress += 1;
   }
 
   private drawRouteLeadPoint(geoJson, startOfRoute): void {
@@ -196,10 +190,8 @@ export class MapComponent implements OnInit {
       )
     );
 
+    // Update the source with this new data.
     this.point = tempPoint;
-    // // Update the source with this new data.
-    // this.point
-    // this.map.getSource('point').setData(point);
 
     // Request the next frame of animation so long the end has not been reached.
     if (this.counter < this.steps) {
