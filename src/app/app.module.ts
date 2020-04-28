@@ -19,11 +19,15 @@ import { environment } from '../environments/environment';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { MAT_BOTTOM_SHEET_DATA, MatBottomSheetModule, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { TotalsComponent } from './totals/totals.component';
+import { MatSelectModule } from '@angular/material/select';
+import { MatDividerModule } from '@angular/material/divider';
 
 @NgModule({
   declarations: [
     AppComponent,
-    ActivityFormComponent
+    ActivityFormComponent,
+    TotalsComponent
   ],
   imports: [
     AngularFireModule.initializeApp(environment.firebaseConfig),
@@ -40,12 +44,15 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatIconModule,
     MatButtonModule,
     MatBottomSheetModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatSelectModule,
+    MatDividerModule
   ],
   providers: [
     ActivityService,
     {provide: MatBottomSheetRef, useValue: {}},
-    {provide: MAT_BOTTOM_SHEET_DATA, useValue: {}}
+    {provide: MAT_BOTTOM_SHEET_DATA, useValue: {}},
+    // {provide: ActivityService, useClass: MockActivityService}
   ],
   bootstrap: [AppComponent]
 })

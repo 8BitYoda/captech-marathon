@@ -2,7 +2,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
-import { ActivityType, CTOffices, NewUserLog } from './activity';
+import { ActivityType, CTOffices, NewUserLog } from '../models/activity';
 import { ActivityService } from '../services/activity.service';
 import { MatBottomSheetRef } from '@angular/material/bottom-sheet';
 
@@ -69,16 +69,20 @@ export class ActivityFormComponent implements OnInit {
   onSubmit(): void {
     if (this.activityInputForm.valid) {
       const payload: NewUserLog = this.activityInputForm.getRawValue();
+      payload.totalBikeMiles = 0;
+      payload.totalRunMiles = 0;
+      payload.totalWalkMiles = 0;
+
       payload.activities.forEach(activity => {
         switch (activity.type) {
           case ActivityType.BIKE:
-            payload.totalBikeMiles = (payload.totalBikeMiles || 0) + activity.distance;
+            payload.totalBikeMiles += activity.distance;
             break;
           case ActivityType.RUN:
-            payload.totalRunMiles = (payload.totalRunMiles || 0) + activity.distance;
+            payload.totalRunMiles += activity.distance;
             break;
           case ActivityType.WALK:
-            payload.totalWalkMiles = (payload.totalWalkMiles || 0) + activity.distance;
+            payload.totalWalkMiles += activity.distance;
             break;
         }
       });

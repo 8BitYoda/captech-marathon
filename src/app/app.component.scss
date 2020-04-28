@@ -44,39 +44,6 @@
     height: 85vh;
     width: 100%;
   }
-
-  // temporary, just wanted to get a feel for a layout
-  .total-placeholder {
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-between;
-
-    .total-tally {
-      background-color: gray;
-      height: 4rem;
-      width: 25%;
-      margin-top: 2rem;
-    }
-  }
-
-  // temporary, just wanted to get a feel for a layout
-  .total-combined-tally {
-    height: 4rem;
-    width: 100%;
-    margin-bottom: 2rem;
-    flex-grow: 1;
-    flex-basis: 100%;
-    display: flex;
-    justify-content: center;
-
-    div {
-      width: 50%;
-      height: inherit;
-      background-color: gray;
-    }
-  }
 }
 
 
