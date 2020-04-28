@@ -3,7 +3,17 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  firebaseConfig: {
+    apiKey: 'AIzaSyCpmUndPrpFHwFX2-0r8QqsOzfewtBfyK0',
+    authDomain: 'captech-marathon.firebaseapp.com',
+    databaseURL: 'https://captech-marathon.firebaseio.com',
+    projectId: 'captech-marathon',
+    storageBucket: 'captech-marathon.appspot.com',
+    messagingSenderId: '744216487157',
+    appId: '1:744216487157:web:b04ceed934b3942b8bd1bc',
+    measurementId: 'G-JZSMVXH1RS'
+  }
 };
 
 /*

@@ -1,0 +1,125 @@
+<h2>Record Activity</h2>
+<form [formGroup]="activityInputForm"
+      (ngSubmit)="onSubmit()" autocomplete="off">
+  <!-- First Name -->
+  <mat-form-field>
+    <mat-label>First Name *</mat-label>
+    <input matInput
+           aria-label="First Name"
+           [formControlName]="'firstName'">
+    <mat-error>required</mat-error>
+  </mat-form-field>
+
+  <!-- Last Name -->
+  <mat-form-field>
+    <mat-label>Last Name *</mat-label>
+    <input matInput
+           aria-label="Last Name"
+           [formControlName]="'lastName'">
+    <mat-error>required</mat-error>
+  </mat-form-field>
+
+  <!-- CapTech Office -->
+  <mat-form-field>
+    <input type="text"
+           placeholder="CapTech Office *"
+           aria-label="CapTech Office"
+           matInput
+           [formControlName]="'office'"
+           [matAutocomplete]="auto">
+    <mat-autocomplete #auto="matAutocomplete">
+      <mat-option *ngFor="let office of filteredOffices | async" [value]="office">
+        {{office}}
+      </mat-option>
+    </mat-autocomplete>
+    <mat-error *ngIf="!activityInputForm.controls.office.hasError('invalidOffice')">required</mat-error>
+    <mat-error *ngIf="activityInputForm.controls.office.hasError('invalidOffice')">please selected a valid CapTech
+      office
+    </mat-error>
+  </mat-form-field>
+
+  <div [formArrayName]="'activities'"
+       class="activitiesContainer"
+       *ngFor="let activity of activities.controls; let i=index;">
+    <div [formGroupName]="i"
+         class="activity">
+      <button mat-icon-button
+              id="removeActivitySm"
+              color="warn"
+              type="button"
+              (click)="removeActivity(i)">
+        <mat-icon>delete</mat-icon>
+      </button>
+
+      <!-- Activity Selector -->
+      <mat-button-toggle-group #group="matButtonToggleGroup" [formControlName]="'type'">
+        <mat-button-toggle value="Bike"
+                           matTooltip="Bike"
+                           [matTooltipShowDelay]="450"
+                           [matTooltipPosition]="'above'"
+                           aria-label="Bike">
+          <mat-icon>directions_bike</mat-icon>
+        </mat-button-toggle>
+        <mat-button-toggle value="Run"
+                           matTooltip="Run"
+                           [matTooltipShowDelay]="450"
+                           [matTooltipPosition]="'above'"
+                           aria-label="Run">
+          <mat-icon>directions_run</mat-icon>
+        </mat-button-toggle>
+        <mat-button-toggle value="Walk"
+                           matTooltip="Walk"
+                           [matTooltipShowDelay]="450"
+                           [matTooltipPosition]="'above'"
+                           aria-label="Walk">
+          <mat-icon>directions_walk</mat-icon>
+        </mat-button-toggle>
+      </mat-button-toggle-group>
+
+      <!-- Activity Distance -->
+      <mat-form-field>
+        <mat-label>Distance (miles)</mat-label>
+        <input matInput
+               type="number"
+               aria-label="distance"
+               [formControlName]="'distance'">
+        <mat-error *ngIf="!activities.at(i).get('distance').hasError('min')">required</mat-error>
+        <mat-error *ngIf="activities.at(i).get('distance').hasError('min')">please enter a distance greater then 0
+          miles
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Activity Date -->
+      <mat-form-field>
+        <mat-label>Date of Activity</mat-label>
+        <input matInput
+               aria-label="date"
+               (focus)="picker.open()"
+               (click)="picker.open()"
+               [matDatepicker]="picker"
+               [formControlName]="'date'">
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+        <mat-error>required</mat-error>
+      </mat-form-field>
+
+      <button mat-icon-button
+              id="removeActivityLg"
+              color="warn"
+              type="button"
+              (click)="removeActivity(i)">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <div id="buttonsContainer" #buttonContainer>
+    <button id="addActivity"
+            mat-icon-button
+            type="button"
+            (click)="addActivity()">
+      <mat-icon>add_circle</mat-icon>
+    </button>
+    <button mat-raised-button color="primary" type="submit" id="submit">Save</button>
+  </div>
+</form>

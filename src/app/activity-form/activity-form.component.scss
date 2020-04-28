@@ -1,0 +1,100 @@
+@import "src/custom-theme";
+
+form {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+  margin-left: 0.5rem;
+
+  mat-form-field {
+    flex-grow: 1;
+    flex-basis: auto;
+    margin: 0 0.5rem 0.5rem 0;
+  }
+
+  .activitiesContainer {
+    order: 2;
+    flex-basis: 100%;
+
+    .activity {
+      display: flex;
+      flex-flow: row wrap;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 0.5rem;
+
+      border-top: 1px solid lightgray;
+
+      mat-button-toggle-group {
+        margin-right: 0.5rem;
+        height: 2.5rem;
+
+        mat-button-toggle {
+          width: inherit;
+
+          ::ng-deep .mat-button-toggle-label-content {
+            line-height: 2.5rem;
+
+            mat-icon {
+              height: 100%;
+            }
+          }
+        }
+
+        &.error {
+          border: solid 1px mat-color($captech-marathon-warn);
+        }
+      }
+
+
+      @media only screen and (max-width: 656px) {
+        mat-button-toggle-group {
+          width: 80%;
+          height: 2rem;
+
+          mat-button-toggle {
+            width: inherit;
+
+            ::ng-deep .mat-button-toggle-label-content {
+              line-height: 2rem;
+            }
+          }
+        }
+
+        mat-form-field {
+          margin-top: 0.5rem;
+          width: 45%;
+        }
+      }
+
+      #removeActivitySm {
+        display: none;
+        @media only screen and (max-width: 656px) {
+          display: block;
+        }
+      }
+
+      #removeActivityLg {
+        display: block;
+        @media only screen and (max-width: 656px) {
+          display: none;
+        }
+      }
+    }
+  }
+
+  #buttonsContainer {
+    flex-basis: 100%;
+    order: 99;
+
+    display: flex;
+    justify-content: flex-end;
+
+    padding: 0.5rem 1rem 0 0;
+    border-top: 1px solid lightgray;
+
+    #submit {
+      margin-left: 0.5rem;
+    }
+  }
+}
