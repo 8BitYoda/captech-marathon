@@ -16,5 +16,4 @@ export class AppComponent {
   openAddActionSheet(): void {
     this.bottomSheet.open(ActivityFormComponent);
   }
-
 }

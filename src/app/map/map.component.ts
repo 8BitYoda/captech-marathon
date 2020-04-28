@@ -5,6 +5,8 @@ import * as turf from '@turf/turf';
 import { ActivityService } from '../services/activity.service';
 import { CapTechOfficeCoord } from '../models/capTechOfficeCoord';
 import { RecenterControl } from './recenter-control';
+import { SelectedOfficeActivityService } from '../services/selected-office-activity.service';
+import { ActivityType, CTOffices } from '../models/activity';
 
 @Component({
   selector: 'app-map',
@@ -53,13 +55,16 @@ export class MapComponent {
   private counter = 0;
   /** coordinates to be drawn during animation of line/point on map. */
   private drawnRouteCoords = [];
+  /** holds reference to the animation so it can be stopped */
+  private animation;
 
   /** CapTech Offices */
   private captechOffices: CapTechOfficeCoord = new CapTechOfficeCoord();
   /** coordinates calculated from total distance along the selected route line */
   private derivedRouteCoords = [];
 
-  constructor(private activityService: ActivityService) {
+  constructor(private activityService: ActivityService,
+              private selectedOfficeActivityService: SelectedOfficeActivityService) {
   }
 
   /**
@@ -79,6 +84,62 @@ export class MapComponent {
 
     this.drawOfficeMarkers();
     this.findTraveledCoordinates();
+
+    this.selectedOfficeActivityService.getCurrentSelections().subscribe(selections => {
+      let selectedRoute;
+      let selectedActivity;
+
+      // clear existing line/point data and stop animation if running
+      this.line = null;
+      this.point = null;
+      this.drawnRouteCoords = [];
+      this.derivedRouteCoords = [];
+      this.counter = 0;
+      cancelAnimationFrame(this.animation);
+
+      switch (selections.office) {
+        case CTOffices.ATLANTA:
+          selectedRoute = this.captechOffices.getAtlRoute();
+          break;
+        case CTOffices.CHARLOTTE:
+          selectedRoute = this.captechOffices.getCltRoute();
+          break;
+        case CTOffices.DC:
+          selectedRoute = this.captechOffices.getDcRoute();
+          break;
+        case CTOffices.PHILADELPHIA:
+          selectedRoute = this.captechOffices.getPhiRoute();
+          break;
+        case CTOffices.COLUMBUS:
+          selectedRoute = this.captechOffices.getCmhRoute();
+          break;
+        case CTOffices.CHICAGO:
+          selectedRoute = this.captechOffices.getChiRoute();
+          break;
+        case CTOffices.DENVER:
+          selectedRoute = this.captechOffices.getDenRoute();
+          break;
+        default:
+          selectedRoute = this.captechOffices.getDefaultRoute();
+      }
+
+      switch (selections.activityType) {
+        case ActivityType.BIKE:
+          selectedActivity = 'totalBike';
+          break;
+        case ActivityType.RUN:
+          selectedActivity = 'totalRun';
+          break;
+        case ActivityType.WALK:
+          selectedActivity = 'totalWalk';
+          break;
+        default:
+          selectedActivity = 'totalMiles';
+      }
+
+      setTimeout(() =>
+        this.findTraveledCoordinates(selectedActivity, selectedRoute), 100);
+    });
   }
 
   private drawOfficeMarkers(): void {
@@ -93,11 +154,9 @@ export class MapComponent {
   /**
    * Calculates coordinates for number of completed miles then calls drawCompletedRoute to draw on map.
    * @param type what type of miles to build completed route off of
+   * @param selectedRoute the route with the currently selected office as the starting point
    */
-  private findTraveledCoordinates(type = 'totalMiles') {
-    // provides the ability to change the starting point of the route to the selected office
-    // todo add logic to allow for a selected 'starting' office
-    const selectedRoute = this.captechOffices.getDefaultRoute();
+  private findTraveledCoordinates(type = 'totalMiles', selectedRoute = this.captechOffices.getDefaultRoute()) {
     const startOfRoute: [number, number] = selectedRoute.geometry.coordinates[0] as [number, number];
     const totalOfficePerimeter = Math.ceil(turf.length(selectedRoute, {units: 'miles'}));
 
@@ -211,7 +270,7 @@ export class MapComponent {
 
     // Request the next frame of animation so long the end has not been reached.
     if (this.counter < this.steps) {
-      requestAnimationFrame(this.myAnimator.bind(this));
+      this.animation = requestAnimationFrame(this.myAnimator.bind(this));
     }
   }
 }

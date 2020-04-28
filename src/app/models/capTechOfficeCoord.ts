@@ -34,4 +34,102 @@ export class CapTechOfficeCoord {
       this.rva,
     ]);
   }
+
+  getAtlRoute() {
+    return turf.lineString([
+      this.atl,
+      this.clt,
+      this.rva,
+      this.dc,
+      this.phi,
+      this.cmh,
+      this.chi,
+      this.den,
+      this.atl
+    ]);
+  }
+
+  getCltRoute() {
+    return turf.lineString([
+      this.clt,
+      this.rva,
+      this.dc,
+      this.phi,
+      this.cmh,
+      this.chi,
+      this.den,
+      this.atl,
+      this.clt
+    ]);
+  }
+
+  getDcRoute() {
+    return turf.lineString([
+      this.dc,
+      this.phi,
+      this.cmh,
+      this.chi,
+      this.den,
+      this.atl,
+      this.clt,
+      this.rva,
+      this.dc
+    ]);
+  }
+
+  getPhiRoute() {
+    return turf.lineString([
+      this.phi,
+      this.cmh,
+      this.chi,
+      this.den,
+      this.atl,
+      this.clt,
+      this.rva,
+      this.dc,
+      this.phi
+    ]);
+  }
+
+  getCmhRoute() {
+    return turf.lineString([
+      this.cmh,
+      this.chi,
+      this.den,
+      this.atl,
+      this.clt,
+      this.rva,
+      this.dc,
+      this.phi,
+      this.cmh
+    ]);
+  }
+
+  getChiRoute() {
+    return turf.lineString([
+      this.chi,
+      this.den,
+      this.atl,
+      this.clt,
+      this.rva,
+      this.dc,
+      this.phi,
+      this.cmh,
+      this.chi
+    ]);
+  }
+
+  getDenRoute() {
+    return turf.lineString([
+      this.den,
+      this.atl,
+      this.clt,
+      this.rva,
+      this.dc,
+      this.phi,
+      this.cmh,
+      this.chi,
+      this.den,
+    ]);
+  }
 }

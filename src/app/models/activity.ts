@@ -44,7 +44,8 @@ export interface Activity {
 export enum ActivityType {
   BIKE = 'Bike',
   RUN = 'Run',
-  WALK = 'Walk'
+  WALK = 'Walk',
+  ALL = 'All'
 }
 
 /** Valid CapTech offices */
