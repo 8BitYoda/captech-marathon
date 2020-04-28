@@ -36,13 +36,7 @@
     position: fixed;
     right: 15px;
     bottom: 15px;
-  }
-
-  // temporary, just wanted to get a feel for a layout
-  .map-placeholder {
-    background-color: gray;
-    height: 85vh;
-    width: 100%;
+    z-index: 999;
   }
 }
 

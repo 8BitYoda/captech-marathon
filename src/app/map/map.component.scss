@@ -1,5 +1,5 @@
 :host {
-  height: 100vh;
+  height: 75vh;
   width: 100%;
 }
 
@@ -12,10 +12,6 @@ mgl-map {
   &::before {
     font-family: Material Icons, serif;
     content: "location_on";
-    font-size: 20px;
-  }
-
-  &.green::before {
-    color: green;
+    font-size: 1.5rem;
   }
 }

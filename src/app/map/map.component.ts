@@ -4,6 +4,7 @@ import { LineLayout, LinePaint, Map, SymbolLayout } from 'mapbox-gl';
 import * as turf from '@turf/turf';
 import { ActivityService } from '../services/activity.service';
 import { CapTechOfficeCoord } from '../models/capTechOfficeCoord';
+import { RecenterControl } from './recenter-control';
 
 @Component({
   selector: 'app-map',
@@ -49,7 +50,7 @@ export class MapComponent {
   private drawnRouteCoords = [];
 
   /** CapTech Offices */
-  captechOffices: CapTechOfficeCoord = new CapTechOfficeCoord();
+  private captechOffices: CapTechOfficeCoord = new CapTechOfficeCoord();
   /** coordinates calculated from total distance along the selected route line */
   private derivedRouteCoords = [];
 
@@ -64,6 +65,10 @@ export class MapComponent {
     this.map = mapRef;
 
     this.map.fitBounds(new mapboxgl.LngLatBounds(this.captechOffices.den, this.captechOffices.phi), {padding: 50});
+    this.map.addControl(new mapboxgl.NavigationControl({showCompass: false}));
+    this.map.addControl(new RecenterControl(), 'top-right');
+    this.map.dragRotate.disable();
+    this.map.touchZoomRotate.disable();
 
     this.drawOfficeMarkers();
     this.findTraveledCoordinates();
