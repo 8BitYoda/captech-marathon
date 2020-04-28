@@ -1,0 +1,17 @@
+:host {
+  height: 75vh;
+  width: 100%;
+}
+
+mgl-map {
+  height: 100%;
+  width: 100%;
+}
+
+::ng-deep .marker {
+  &::before {
+    font-family: Material Icons, serif;
+    content: "location_on";
+    font-size: 1.5rem;
+  }
+}

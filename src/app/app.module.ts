@@ -22,12 +22,16 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { TotalsComponent } from './totals/totals.component';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDividerModule } from '@angular/material/divider';
+import { NgxMapboxGLModule } from 'ngx-mapbox-gl';
+import { MapComponent } from './map/map.component';
+import { MockActivityService } from './services/mock/mock-activity.service';
 
 @NgModule({
   declarations: [
     AppComponent,
     ActivityFormComponent,
-    TotalsComponent
+    TotalsComponent,
+    MapComponent
   ],
   imports: [
     AngularFireModule.initializeApp(environment.firebaseConfig),
@@ -46,13 +50,16 @@ import { MatDividerModule } from '@angular/material/divider';
     MatBottomSheetModule,
     MatTooltipModule,
     MatSelectModule,
-    MatDividerModule
+    MatDividerModule,
+    NgxMapboxGLModule.withConfig({
+      accessToken: 'pk.eyJ1IjoiamF5ZmlhbGtvd3NraSIsImEiOiJjazhyamMxOTUwMHAzM2dxbXVoMXR1bTh3In0.V0d8Dnpa3jNycNpIPEtuYQ'
+    })
   ],
   providers: [
-    ActivityService,
+    // ActivityService,
     {provide: MatBottomSheetRef, useValue: {}},
     {provide: MAT_BOTTOM_SHEET_DATA, useValue: {}},
-    // {provide: ActivityService, useClass: MockActivityService}
+    {provide: ActivityService, useClass: MockActivityService}
   ],
   bootstrap: [AppComponent]
 })

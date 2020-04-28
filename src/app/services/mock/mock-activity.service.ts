@@ -9,10 +9,10 @@ import { of } from 'rxjs';
 })
 export class MockActivityService implements ActivityServiceInterface {
   private mockTotals: Totals = {
-    totalMiles: 987654,
-    totalBike: 87654,
-    totalRun: 7654,
-    totalWalk: 6543
+    totalMiles: 3185,
+    totalBike: 1650,
+    totalRun: 930,
+    totalWalk: 605
   };
 
   addActivity(payload: NewUserLog) {
