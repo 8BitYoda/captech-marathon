@@ -69,12 +69,13 @@ export class MapComponent {
   setMap(mapRef): void {
     this.map = mapRef;
     this.map.setMaxBounds(this.mapBounds);
-
     this.map.fitBounds(new mapboxgl.LngLatBounds(this.captechOffices.den, this.captechOffices.phi), {padding: 50});
-    this.map.addControl(new mapboxgl.NavigationControl({showCompass: false}));
-    this.map.addControl(new RecenterControl(), 'top-right');
+
     this.map.dragRotate.disable();
     this.map.touchZoomRotate.disable();
+    this.map.addControl(new mapboxgl.NavigationControl({showCompass: false}));
+    this.map.addControl(new RecenterControl(), 'top-right');
+
 
     this.drawOfficeMarkers();
     this.findTraveledCoordinates();
