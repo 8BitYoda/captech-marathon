@@ -19,6 +19,11 @@ export class MapComponent {
    */
   readonly frameRate = 500;
 
+  /** Bounds of the map to prevent being able to pan away from the lower 49 states. */
+  readonly usaNE: [number, number] = [-64.677098, 50.606017];
+  readonly usaSW: [number, number] = [-126.70728, 23.745919];
+  readonly mapBounds = new mapboxgl.LngLatBounds(this.usaSW, this.usaNE);
+
   map: Map; // mapbox-gl reference
   line;
   point;
@@ -63,6 +68,7 @@ export class MapComponent {
    */
   setMap(mapRef): void {
     this.map = mapRef;
+    this.map.setMaxBounds(this.mapBounds);
 
     this.map.fitBounds(new mapboxgl.LngLatBounds(this.captechOffices.den, this.captechOffices.phi), {padding: 50});
     this.map.addControl(new mapboxgl.NavigationControl({showCompass: false}));
