@@ -24,7 +24,6 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDividerModule } from '@angular/material/divider';
 import { NgxMapboxGLModule } from 'ngx-mapbox-gl';
 import { MapComponent } from './map/map.component';
-import { MockActivityService } from './services/mock/mock-activity.service';
 
 @NgModule({
   declarations: [
@@ -56,10 +55,10 @@ import { MockActivityService } from './services/mock/mock-activity.service';
     })
   ],
   providers: [
-    // ActivityService,
+    ActivityService,
     {provide: MatBottomSheetRef, useValue: {}},
     {provide: MAT_BOTTOM_SHEET_DATA, useValue: {}},
-    {provide: ActivityService, useClass: MockActivityService}
+    // {provide: ActivityService, useClass: MockActivityService}
   ],
   bootstrap: [AppComponent]
 })
