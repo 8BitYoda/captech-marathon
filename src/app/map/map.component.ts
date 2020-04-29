@@ -167,36 +167,40 @@ export class MapComponent {
       let loopsMade = 0; // tracks how many loops around selectedRoute
       let partialLoopSteps = 0; // tracks number of steps scaled down to remainder distance
 
-      // Loop through the route to account for a total milesTraveled
-      // being longer then the selectedRoute's total distance.
-      while (milesTraveled >= 0) {
-        // if milesTraveled is longer then the selectedRoute's perimeter add all coordinates along the selected route
-        if (milesTraveled > totalOfficePerimeter) {
-          for (let i = 0; i < totalOfficePerimeter; i += totalOfficePerimeter / this.frameRate) {
-            derivedCoords.push(turf.along(selectedRoute, i, {units: 'miles'}).geometry.coordinates);
-          }
-          loopsMade++;
+      if (milesTraveled > 0) {
+        // Loop through the route to account for a total milesTraveled
+        // being longer then the selectedRoute's total distance.
+        while (milesTraveled >= 0) {
+          // if milesTraveled is longer then the selectedRoute's perimeter add all coordinates along the selected route
+          if (milesTraveled > totalOfficePerimeter) {
+            for (let i = 0; i < totalOfficePerimeter; i += totalOfficePerimeter / this.frameRate) {
+              derivedCoords.push(turf.along(selectedRoute, i, {units: 'miles'}).geometry.coordinates);
+            }
+            loopsMade++;
 
-          // if milesTraveled is less then the selectedRoute's perimeter add only the coordinates for the traveled part
-        } else {
-          partialLoopSteps = Math.ceil(milesTraveled / Math.ceil(totalOfficePerimeter / this.frameRate));
-          for (let i = 0; i < milesTraveled; i += milesTraveled / partialLoopSteps) {
-            derivedCoords.push(turf.along(selectedRoute, i, {units: 'miles'}).geometry.coordinates);
+            // if milesTraveled is less then the selectedRoute's perimeter add only the coordinates for the traveled part
+          } else {
+            partialLoopSteps = Math.ceil(milesTraveled / Math.ceil(totalOfficePerimeter / this.frameRate));
+            for (let i = 0; i < milesTraveled; i += milesTraveled / partialLoopSteps) {
+              derivedCoords.push(turf.along(selectedRoute, i, {units: 'miles'}).geometry.coordinates);
+            }
           }
+
+          milesTraveled -= totalOfficePerimeter;
         }
 
-        milesTraveled -= totalOfficePerimeter;
+        this.derivedRouteCoords = derivedCoords;
+        this.steps = partialLoopSteps + (this.frameRate * loopsMade);
+      } else {
+        this.steps = 0;
       }
-
-      this.derivedRouteCoords = derivedCoords;
-      this.steps = partialLoopSteps + (this.frameRate * loopsMade);
 
       this.drawCompletedRoute(startOfRoute);
     });
   }
 
   /**
-   * Sets inital states of the line and point features on map then calls {@link myAnimator}
+   * Sets initial states of the line and point features on map then calls {@link myAnimator}
    * @param startOfRoute the starting place for the line and point
    */
   private drawCompletedRoute(startOfRoute: [number, number]): void {
@@ -227,7 +231,9 @@ export class MapComponent {
         }]
     };
 
-    this.myAnimator();
+    if (this.steps > 0) {
+      this.myAnimator();
+    }
   }
 
   /**
