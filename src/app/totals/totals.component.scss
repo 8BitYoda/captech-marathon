@@ -29,8 +29,8 @@
       width: 100%;
 
       label {
-        font-size: 14px;
-        font-weight: 500;
+        font-size: 13px;
+        font-weight: 600;
       }
 
       mat-icon {
@@ -47,7 +47,7 @@
         }
       }
 
-      @media only screen and (max-width: 700px) {
+      @media only screen and (max-width: 745px) {
         label {
           font-size: 10px;
         }
@@ -56,16 +56,75 @@
           font-size: 14px;
         }
       }
+    }
+  }
 
-      @media only screen and (min-width: 900px) {
+  #mobile-view {
+    width: 100%;
+    display: none;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    align-self: flex-end;
+    align-items: center;
+
+    .total-group {
+      max-width: fit-content;
+
+      mat-button-toggle {
+        max-width: 7rem;
+      }
+
+      mat-icon {
+        font-size: 20px;
+      }
+
+      label {
+
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      #sm-mobile-total {
+        display: none;
+      }
+    }
+
+    .activity-total {
+      font-family: Roboto, "Helvetica Neue", sans-serif !important;
+      font-size: 18px;
+      font-weight: bold;
+      padding-left: 1rem;
+
+      display: flex;
+      flex-flow: nowrap column;
+
+      small {
+        align-self: flex-end;
+        font-weight: 500;
+      }
+    }
+
+    @media only screen and (max-width: 345px) {
+      .total-group {
         mat-icon {
-          font-size: 20px;
+          font-size: 16px;
         }
+
+        #sm-mobile-total {
+          display: inline;
+        }
+
+        #mobile-total {
+          display: none;
+        }
+      }
+      .activity-total {
+        font-size: 16px;
       }
     }
   }
 
-  @media only screen and (max-width: 899px) {
+  @media only screen and (max-width: 940px) {
     mat-form-field {
       width: 100%;
     }
@@ -78,6 +137,15 @@
     .total-group {
       flex-grow: 1;
       flex-basis: 95%;
+    }
+  }
+
+  @media only screen and (max-width: 645px) {
+    #mobile-view {
+      display: flex;
+    }
+    #large-screen-view {
+      display: none;
     }
   }
 }

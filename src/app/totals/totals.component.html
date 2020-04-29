@@ -8,23 +8,47 @@
     </mat-select>
   </mat-form-field>
 
-  <mat-button-toggle-group class="total-group" value="total">
-    <mat-button-toggle class="total combined" value="total">
-      <label>Total</label>
-      <span>{{ totals?.totalMiles || '--' }} <small>miles</small></span>
-    </mat-button-toggle>
+  <mat-button-toggle-group class="total-group" value="total" id="large-screen-view">
     <mat-button-toggle class="total" value="bike">
       <mat-icon [inline]="true">directions_bike</mat-icon>
-      <span>{{ totals?.totalBike || '--' }} <small>miles</small></span>
+      <span>{{ (totals?.totalBike | number) || '--' }} <small>miles</small></span>
     </mat-button-toggle>
     <mat-button-toggle class="total" value="run">
       <mat-icon [inline]="true">directions_run</mat-icon>
-      <span>{{ totals?.totalRun || '--' }} <small>miles</small></span>
+      <span>{{ (totals?.totalRun | number) || '--' }} <small>miles</small></span>
     </mat-button-toggle>
     <mat-button-toggle class="total" value="walk">
       <mat-icon [inline]="true">directions_walk</mat-icon>
-      <span>{{ totals?.totalWalk || '--' }} <small>miles</small></span>
+      <span>{{ (totals?.totalWalk | number) || '--' }} <small>miles</small></span>
+    </mat-button-toggle>
+    <mat-button-toggle class="total combined" value="total">
+      <label>TOTAL</label>
+      <span>{{ (totals?.totalMiles | number) || '--' }} <small>miles</small></span>
     </mat-button-toggle>
   </mat-button-toggle-group>
+
+  <div id="mobile-view">
+    <mat-button-toggle-group class="total-group" value="total">
+      <mat-button-toggle class="total" value="bike">
+        <mat-icon [inline]="true">directions_bike</mat-icon>
+      </mat-button-toggle>
+      <mat-button-toggle class="total" value="run">
+        <mat-icon [inline]="true">directions_run</mat-icon>
+      </mat-button-toggle>
+      <mat-button-toggle class="total" value="walk">
+        <mat-icon [inline]="true">directions_walk</mat-icon>
+      </mat-button-toggle>
+      <mat-button-toggle class="total combined" value="total">
+        <label id="mobile-total">TOTAL</label>
+        <mat-icon [inline]="true" id="sm-mobile-total">functions</mat-icon>
+      </mat-button-toggle>
+    </mat-button-toggle-group>
+
+    <!--    todo -->
+    <div class="activity-total">{{ (totals?.totalMiles | number) || '--' }} <br/><small>miles</small></div>
+    <!--    <span>{{ totals?.totalRun || '&#45;&#45;' }} <small>miles</small></span>-->
+    <!--    <span>{{ totals?.totalBike || '&#45;&#45;' }} <small>miles</small></span>-->
+    <!--    <span>{{ totals?.totalMiles || '&#45;&#45;' }} <small>miles</small></span>-->
+  </div>
 </div>
 <mat-divider></mat-divider>
