@@ -8,7 +8,8 @@
     </mat-select>
   </mat-form-field>
 
-  <mat-button-toggle-group class="total-group" value="total" id="large-screen-view">
+  <mat-button-toggle-group class="total-group" id="large-screen-view"
+                           value="all" (change)="updateSelectedActivityType($event)">
     <mat-button-toggle class="total" value="bike">
       <mat-icon [inline]="true">directions_bike</mat-icon>
       <span>{{ (totals?.totalBike | number) || '--' }} <small>miles</small></span>
@@ -21,14 +22,14 @@
       <mat-icon [inline]="true">directions_walk</mat-icon>
       <span>{{ (totals?.totalWalk | number) || '--' }} <small>miles</small></span>
     </mat-button-toggle>
-    <mat-button-toggle class="total combined" value="total">
+    <mat-button-toggle class="total combined" value="all">
       <label>TOTAL</label>
       <span>{{ (totals?.totalMiles | number) || '--' }} <small>miles</small></span>
     </mat-button-toggle>
   </mat-button-toggle-group>
 
   <div id="mobile-view">
-    <mat-button-toggle-group class="total-group" value="total">
+    <mat-button-toggle-group class="total-group" value="total" (change)="updateSelectedActivityType($event)">
       <mat-button-toggle class="total" value="bike">
         <mat-icon [inline]="true">directions_bike</mat-icon>
       </mat-button-toggle>
@@ -44,11 +45,10 @@
       </mat-button-toggle>
     </mat-button-toggle-group>
 
-    <!--    todo -->
-    <div class="activity-total">{{ (totals?.totalMiles | number) || '--' }} <br/><small>miles</small></div>
-    <!--    <span>{{ totals?.totalRun || '&#45;&#45;' }} <small>miles</small></span>-->
-    <!--    <span>{{ totals?.totalBike || '&#45;&#45;' }} <small>miles</small></span>-->
-    <!--    <span>{{ totals?.totalMiles || '&#45;&#45;' }} <small>miles</small></span>-->
+    <div class="activity-total">
+      {{ (selectedActivityTotal | number) || '--' }}
+      <small>miles</small>
+    </div>
   </div>
 </div>
 <mat-divider></mat-divider>

@@ -45,7 +45,7 @@ export class ActivityFormComponent implements OnInit {
   createActivityItem(): FormGroup {
     return this.fb.group({
       distance: ['', [Validators.required, Validators.min(0)]],
-      type: ['Run', Validators.required],
+      type: [ActivityType.RUN, Validators.required],
       date: [new Date(), Validators.required]
     });
   }
@@ -61,7 +61,7 @@ export class ActivityFormComponent implements OnInit {
       this.activities.removeAt(index);
     } else {
       this.activities.at(index).get('distance').setValue('');
-      this.activities.at(index).get('type').setValue('Run');
+      this.activities.at(index).get('type').setValue(ActivityType.RUN);
       this.activities.at(index).get('date').setValue(new Date());
     }
   }
