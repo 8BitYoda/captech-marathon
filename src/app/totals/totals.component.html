@@ -8,25 +8,23 @@
     </mat-select>
   </mat-form-field>
 
-  <div class="total-group">
-    <div class="total combined">
+  <mat-button-toggle-group class="total-group" value="total">
+    <mat-button-toggle class="total combined" value="total">
       <label>Total</label>
       <span>{{ totals?.totalMiles || '--' }} <small>miles</small></span>
-    </div>
-    <div class="total">
+    </mat-button-toggle>
+    <mat-button-toggle class="total" value="bike">
       <mat-icon [inline]="true">directions_bike</mat-icon>
       <span>{{ totals?.totalBike || '--' }} <small>miles</small></span>
-    </div>
-  </div>
-  <div class="total-group">
-    <div class="total">
+    </mat-button-toggle>
+    <mat-button-toggle class="total" value="run">
       <mat-icon [inline]="true">directions_run</mat-icon>
       <span>{{ totals?.totalRun || '--' }} <small>miles</small></span>
-    </div>
-    <div class="total">
+    </mat-button-toggle>
+    <mat-button-toggle class="total" value="walk">
       <mat-icon [inline]="true">directions_walk</mat-icon>
       <span>{{ totals?.totalWalk || '--' }} <small>miles</small></span>
-    </div>
-  </div>
+    </mat-button-toggle>
+  </mat-button-toggle-group>
 </div>
 <mat-divider></mat-divider>
