@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
-import * as firebase from 'firebase';
 import { CTOffices, ExistingUserLog, NewUserLog } from '../models/activity';
 import { from, Observable } from 'rxjs';
 import { map, publishReplay, refCount } from 'rxjs/operators';
 import { Totals } from '../models/totals';
+import { firestore } from 'firebase/app';
 
 export interface ActivityServiceInterface {
   addActivity(payload: NewUserLog);
@@ -32,10 +32,10 @@ export class ActivityService implements ActivityServiceInterface {
           transaction.set(userRef, payload);
         } else {
           const addPayload: ExistingUserLog = {
-            activities: firebase.firestore.FieldValue.arrayUnion(...payload.activities),
-            totalBikeMiles: firebase.firestore.FieldValue.increment(payload.totalBikeMiles),
-            totalRunMiles: firebase.firestore.FieldValue.increment(payload.totalRunMiles),
-            totalWalkMiles: firebase.firestore.FieldValue.increment(payload.totalWalkMiles)
+            activities: firestore.FieldValue.arrayUnion(...payload.activities),
+            totalBikeMiles: firestore.FieldValue.increment(payload.totalBikeMiles),
+            totalRunMiles: firestore.FieldValue.increment(payload.totalRunMiles),
+            totalWalkMiles: firestore.FieldValue.increment(payload.totalWalkMiles)
           };
           transaction.set(userRef, addPayload, {merge: true});
         }
