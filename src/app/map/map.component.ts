@@ -74,8 +74,9 @@ export class MapComponent {
   setMap(mapRef): void {
     this.map = mapRef;
     this.map.setMaxBounds(this.mapBounds);
-    this.map.fitBounds(new mapboxgl.LngLatBounds(this.captechOffices.den, this.captechOffices.phi), {padding: 50});
+    this.map.fitBounds(this.findRouteBounds(), {padding: 50});
 
+    // sets available map controls
     this.map.dragRotate.disable();
     this.map.touchZoomRotate.disable();
     this.map.addControl(new mapboxgl.NavigationControl({showCompass: false}));
@@ -272,5 +273,21 @@ export class MapComponent {
     if (this.counter < this.steps) {
       this.animation = requestAnimationFrame(this.myAnimator.bind(this));
     }
+  }
+
+  /**
+   * Takes in all route points and creates a bounds box that encompasses all points
+   * @Returns bounds: {@link mapboxgl.LngLatBounds} object with the bounding coordinates to be
+   * used to center the map within the view area
+   */
+  private findRouteBounds(): mapboxgl.LngLatBounds {
+    const temp = [];
+    for (const key in this.captechOffices) {
+      if (this.captechOffices.hasOwnProperty(key)) {
+        temp.push([this.captechOffices[key][0], this.captechOffices[key][1]]);
+      }
+    }
+    const bounds = turf.bbox(turf.lineString(temp));
+    return new mapboxgl.LngLatBounds([[bounds[0], bounds[1]], [bounds[2], bounds[3]]]);
   }
 }
