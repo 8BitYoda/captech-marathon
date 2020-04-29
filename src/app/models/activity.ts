@@ -1,5 +1,5 @@
-import * as firebase from 'firebase';
-import FieldValue = firebase.firestore.FieldValue;
+import { firestore } from 'firebase/app';
+import FieldValue = firestore.FieldValue;
 
 /** Object that contains user's information as well as the activities being entered */
 export interface NewUserLog {
@@ -44,7 +44,8 @@ export interface Activity {
 export enum ActivityType {
   BIKE = 'Bike',
   RUN = 'Run',
-  WALK = 'Walk'
+  WALK = 'Walk',
+  ALL = 'All'
 }
 
 /** Valid CapTech offices */

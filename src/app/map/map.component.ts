@@ -5,6 +5,8 @@ import * as turf from '@turf/turf';
 import { ActivityService } from '../services/activity.service';
 import { CapTechOfficeCoord } from '../models/capTechOfficeCoord';
 import { RecenterControl } from './recenter-control';
+import { SelectedOfficeActivityService } from '../services/selected-office-activity.service';
+import { ActivityType, CTOffices } from '../models/activity';
 
 @Component({
   selector: 'app-map',
@@ -53,13 +55,16 @@ export class MapComponent {
   private counter = 0;
   /** coordinates to be drawn during animation of line/point on map. */
   private drawnRouteCoords = [];
+  /** holds reference to the animation so it can be stopped */
+  private animation;
 
   /** CapTech Offices */
   private captechOffices: CapTechOfficeCoord = new CapTechOfficeCoord();
   /** coordinates calculated from total distance along the selected route line */
   private derivedRouteCoords = [];
 
-  constructor(private activityService: ActivityService) {
+  constructor(private activityService: ActivityService,
+              private selectedOfficeActivityService: SelectedOfficeActivityService) {
   }
 
   /**
@@ -69,8 +74,9 @@ export class MapComponent {
   setMap(mapRef): void {
     this.map = mapRef;
     this.map.setMaxBounds(this.mapBounds);
-    this.map.fitBounds(new mapboxgl.LngLatBounds(this.captechOffices.den, this.captechOffices.phi), {padding: 50});
+    this.map.fitBounds(this.findRouteBounds(), {padding: 50});
 
+    // sets available map controls
     this.map.dragRotate.disable();
     this.map.touchZoomRotate.disable();
     this.map.addControl(new mapboxgl.NavigationControl({showCompass: false}));
@@ -79,6 +85,62 @@ export class MapComponent {
 
     this.drawOfficeMarkers();
     this.findTraveledCoordinates();
+
+    this.selectedOfficeActivityService.getCurrentSelections().subscribe(selections => {
+      let selectedRoute;
+      let selectedActivity;
+
+      // clear existing line/point data and stop animation if running
+      this.line = null;
+      this.point = null;
+      this.drawnRouteCoords = [];
+      this.derivedRouteCoords = [];
+      this.counter = 0;
+      cancelAnimationFrame(this.animation);
+
+      switch (selections.office) {
+        case CTOffices.ATLANTA:
+          selectedRoute = this.captechOffices.getAtlRoute();
+          break;
+        case CTOffices.CHARLOTTE:
+          selectedRoute = this.captechOffices.getCltRoute();
+          break;
+        case CTOffices.DC:
+          selectedRoute = this.captechOffices.getDcRoute();
+          break;
+        case CTOffices.PHILADELPHIA:
+          selectedRoute = this.captechOffices.getPhiRoute();
+          break;
+        case CTOffices.COLUMBUS:
+          selectedRoute = this.captechOffices.getCmhRoute();
+          break;
+        case CTOffices.CHICAGO:
+          selectedRoute = this.captechOffices.getChiRoute();
+          break;
+        case CTOffices.DENVER:
+          selectedRoute = this.captechOffices.getDenRoute();
+          break;
+        default:
+          selectedRoute = this.captechOffices.getDefaultRoute();
+      }
+
+      switch (selections.activityType) {
+        case ActivityType.BIKE:
+          selectedActivity = 'totalBike';
+          break;
+        case ActivityType.RUN:
+          selectedActivity = 'totalRun';
+          break;
+        case ActivityType.WALK:
+          selectedActivity = 'totalWalk';
+          break;
+        default:
+          selectedActivity = 'totalMiles';
+      }
+
+      setTimeout(() =>
+        this.findTraveledCoordinates(selectedActivity, selectedRoute), 100);
+    });
   }
 
   private drawOfficeMarkers(): void {
@@ -93,11 +155,9 @@ export class MapComponent {
   /**
    * Calculates coordinates for number of completed miles then calls drawCompletedRoute to draw on map.
    * @param type what type of miles to build completed route off of
+   * @param selectedRoute the route with the currently selected office as the starting point
    */
-  private findTraveledCoordinates(type = 'totalMiles') {
-    // provides the ability to change the starting point of the route to the selected office
-    // todo add logic to allow for a selected 'starting' office
-    const selectedRoute = this.captechOffices.getDefaultRoute();
+  private findTraveledCoordinates(type = 'totalMiles', selectedRoute = this.captechOffices.getDefaultRoute()) {
     const startOfRoute: [number, number] = selectedRoute.geometry.coordinates[0] as [number, number];
     const totalOfficePerimeter = Math.ceil(turf.length(selectedRoute, {units: 'miles'}));
 
@@ -107,36 +167,40 @@ export class MapComponent {
       let loopsMade = 0; // tracks how many loops around selectedRoute
       let partialLoopSteps = 0; // tracks number of steps scaled down to remainder distance
 
-      // Loop through the route to account for a total milesTraveled
-      // being longer then the selectedRoute's total distance.
-      while (milesTraveled >= 0) {
-        // if milesTraveled is longer then the selectedRoute's perimeter add all coordinates along the selected route
-        if (milesTraveled > totalOfficePerimeter) {
-          for (let i = 0; i < totalOfficePerimeter; i += totalOfficePerimeter / this.frameRate) {
-            derivedCoords.push(turf.along(selectedRoute, i, {units: 'miles'}).geometry.coordinates);
-          }
-          loopsMade++;
+      if (milesTraveled > 0) {
+        // Loop through the route to account for a total milesTraveled
+        // being longer then the selectedRoute's total distance.
+        while (milesTraveled >= 0) {
+          // if milesTraveled is longer then the selectedRoute's perimeter add all coordinates along the selected route
+          if (milesTraveled > totalOfficePerimeter) {
+            for (let i = 0; i < totalOfficePerimeter; i += totalOfficePerimeter / this.frameRate) {
+              derivedCoords.push(turf.along(selectedRoute, i, {units: 'miles'}).geometry.coordinates);
+            }
+            loopsMade++;
 
-          // if milesTraveled is less then the selectedRoute's perimeter add only the coordinates for the traveled part
-        } else {
-          partialLoopSteps = Math.ceil(milesTraveled / Math.ceil(totalOfficePerimeter / this.frameRate));
-          for (let i = 0; i < milesTraveled; i += milesTraveled / partialLoopSteps) {
-            derivedCoords.push(turf.along(selectedRoute, i, {units: 'miles'}).geometry.coordinates);
+            // if milesTraveled is less then the selectedRoute's perimeter add only the coordinates for the traveled part
+          } else {
+            partialLoopSteps = Math.ceil(milesTraveled / Math.ceil(totalOfficePerimeter / this.frameRate));
+            for (let i = 0; i < milesTraveled; i += milesTraveled / partialLoopSteps) {
+              derivedCoords.push(turf.along(selectedRoute, i, {units: 'miles'}).geometry.coordinates);
+            }
           }
+
+          milesTraveled -= totalOfficePerimeter;
         }
 
-        milesTraveled -= totalOfficePerimeter;
+        this.derivedRouteCoords = derivedCoords;
+        this.steps = partialLoopSteps + (this.frameRate * loopsMade);
+      } else {
+        this.steps = 0;
       }
-
-      this.derivedRouteCoords = derivedCoords;
-      this.steps = partialLoopSteps + (this.frameRate * loopsMade);
 
       this.drawCompletedRoute(startOfRoute);
     });
   }
 
   /**
-   * Sets inital states of the line and point features on map then calls {@link myAnimator}
+   * Sets initial states of the line and point features on map then calls {@link myAnimator}
    * @param startOfRoute the starting place for the line and point
    */
   private drawCompletedRoute(startOfRoute: [number, number]): void {
@@ -167,7 +231,9 @@ export class MapComponent {
         }]
     };
 
-    this.myAnimator();
+    if (this.steps > 0) {
+      this.myAnimator();
+    }
   }
 
   /**
@@ -211,7 +277,23 @@ export class MapComponent {
 
     // Request the next frame of animation so long the end has not been reached.
     if (this.counter < this.steps) {
-      requestAnimationFrame(this.myAnimator.bind(this));
+      this.animation = requestAnimationFrame(this.myAnimator.bind(this));
     }
+  }
+
+  /**
+   * Takes in all route points and creates a bounds box that encompasses all points
+   * @Returns bounds: {@link mapboxgl.LngLatBounds} object with the bounding coordinates to be
+   * used to center the map within the view area
+   */
+  private findRouteBounds(): mapboxgl.LngLatBounds {
+    const temp = [];
+    for (const key in this.captechOffices) {
+      if (this.captechOffices.hasOwnProperty(key)) {
+        temp.push([this.captechOffices[key][0], this.captechOffices[key][1]]);
+      }
+    }
+    const bounds = turf.bbox(turf.lineString(temp));
+    return new mapboxgl.LngLatBounds([[bounds[0], bounds[1]], [bounds[2], bounds[3]]]);
   }
 }
